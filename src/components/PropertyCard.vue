@@ -7,13 +7,14 @@ import { usePropertyStore } from '@/stores/PropertyStore'
 const property = usePropertyStore()
 const isLoading = computed(() => property.isLoading)
 
-const propertiesData = computed(() => property.propertyData)
+const propertiesData = computed(() => property.searchPropertyData)
 </script>
 <template>
   <div v-if="isLoading">Loading...</div>
-  <section v-else class="results">
+  <section v-else-if="propertiesData && propertiesData.length > 0" class="results">
     <div v-for="property in propertiesData" :key="property.id" class="data-card">
       <div class="card-upper">
+        <span class="data-type">{{ property.s_r }}</span>
         <swiper :slides-per-view="1" :space-between="50">
           <swiper-slide v-for="each_image in property.img_src"
             ><img :src="each_image" alt="" srcset=""
@@ -37,6 +38,7 @@ const propertiesData = computed(() => property.propertyData)
       </div>
     </div>
   </section>
+  <p v-else class="no-result--text">No result found.</p>
 </template>
 
 <style scoped>
@@ -45,6 +47,21 @@ const propertiesData = computed(() => property.propertyData)
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
   margin-top: 4rem;
+}
+.card-upper {
+  position: relative;
+}
+.data-type {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  background: white;
+  padding: 5px 20px;
+  border-radius: 25rem;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 500;
 }
 .data-card {
   border: 1px solid #d4d4d4;
@@ -99,5 +116,11 @@ const propertiesData = computed(() => property.propertyData)
 .bed-bath {
   justify-content: start;
   gap: 1rem;
+}
+.no-result--text {
+  font-size: 20px;
+  line-height: normal;
+  font-weight: 700;
+  text-align: center;
 }
 </style>

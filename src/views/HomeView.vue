@@ -5,35 +5,37 @@ import PropertyCard from '@/components/PropertyCard.vue'
 
 const property = usePropertyStore()
 const searchText = ref('')
-const radiovalue = ref('buy')
+const radiovalue = ref('')
 const pageNumber = computed(() => property.page)
 const dataLimit = computed(() => property.limit)
 
-onMounted(() => {
-  property.fetchAllListing(pageNumber.value, dataLimit.value)
-})
+// onMounted(() => {
+//   property.fetchAllListing(pageNumber.value, dataLimit.value)
+// })
 
 async function searchProperties() {
-  await property.fetchAllListing(page, limit)
+  await property.searchProperty(radiovalue.value, searchText.value)
 }
 </script>
 
 <template>
   <section class="home">
     <h3>Tired Of Your Cramped Space? Search For a BIGGER Home</h3>
-    <form @submit.prevent="searchProperties" method="get">
+    <form @submit.prevent="searchProperties" @keyup.prevent="searchProperties" method="get">
       <div class="type-radio">
         <input
           type="radio"
           name="type"
-          id="buy"
-          value="buy"
+          id="all"
+          value="All"
           checked="checked"
           v-model="radiovalue"
         />
-        <label for="buy">Buy</label>
-        <input type="radio" name="type" id="rent" value="rent" v-model="radiovalue" />
-        <label for="rent">Rent</label>
+        <label for="all">All</label>
+        <input type="radio" name="type" id="sale" value="Sale" v-model="radiovalue" />
+        <label for="sale">sale</label>
+        <input type="radio" name="type" id="lease" value="Lease" v-model="radiovalue" />
+        <label for="lease">lease</label>
       </div>
       <div class="search">
         <input
