@@ -14,7 +14,7 @@ const dataLimit = computed(() => property.limit)
 // })
 
 async function searchProperties() {
-  await property.searchProperty(radiovalue.value, searchText.value)
+  await property.searchProperty(radiovalue.value)
 }
 </script>
 
@@ -47,7 +47,7 @@ async function searchProperties() {
       </div>
     </form>
   </section>
-  <PropertyCard />
+  <PropertyCard :dType="radiovalue" />
 </template>
 
 <style scoped>

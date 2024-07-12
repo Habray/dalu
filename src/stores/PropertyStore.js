@@ -5,7 +5,12 @@ export const usePropertyStore = defineStore('regions', {
   state: () => ({
     isLoading: false,
     propertyData: [],
-    searchPropertyData: []
+    searchPropertyData: [],
+    totalPages: 0,
+    currentPage: 1,
+    lastPage: 1,
+    prevPage: null,
+    nextPage: null
   }),
 
   actions: {
@@ -40,34 +45,49 @@ export const usePropertyStore = defineStore('regions', {
         this.isLoading = false
       }
     },
-    async searchProperty(type, page = 1, limit = 9) {
+    async searchProperty(type, page = 1, perPage = 9) {
       this.isLoading = true
       try {
         const response = await axios.get('http://localhost:3000/properties', {
           params: {
             s_r: type,
-            _page: page,
-            _limit: limit
+            _per_page: perPage,
+            _page: page
           },
           headers: {
             'content-type': 'application/json'
           }
         })
-        const totalCount = response.headers['items']
-        const data = await response.data
+
+        const { prev, next, last, pages, data } = await response.data
         if (data && data.length > 0) {
           this.$patch({
-            searchPropertyData: data
+            searchPropertyData: data,
+            totalPages: pages,
+            currentPage: page,
+            lastPage: last,
+            prevPage: prev,
+            nextPage: next
           })
         } else {
           this.$patch({
-            searchPropertyData: []
+            searchPropertyData: [],
+            totalPages: 0,
+            currentPage: 1,
+            lastPage: 1,
+            prevPage: null,
+            nextPage: null
           })
         }
       } catch (error) {
         console.log('Error Search Property: ', error)
         this.$patch({
-          searchPropertyData: []
+          searchPropertyData: [],
+          totalPages: 0,
+          currentPage: 1,
+          lastPage: 1,
+          prevPage: null,
+          nextPage: null
         })
       } finally {
         this.isLoading = false

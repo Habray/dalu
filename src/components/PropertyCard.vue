@@ -8,6 +8,17 @@ const property = usePropertyStore()
 const isLoading = computed(() => property.isLoading)
 
 const propertiesData = computed(() => property.searchPropertyData)
+const totalPages = computed(() => property.totalPages)
+const currentPage = computed(() => property.currentPage)
+const prevPage = computed(() => property.prevPage)
+const nextPage = computed(() => property.nextPage)
+
+const props = defineProps({
+  dType: String
+})
+const fetchProperties = async (page = 1) => {
+  await property.searchProperty(props.dType, page)
+}
 </script>
 <template>
   <div v-if="isLoading">Loading...</div>
@@ -39,6 +50,19 @@ const propertiesData = computed(() => property.searchPropertyData)
     </div>
   </section>
   <p v-else class="no-result--text">No result found.</p>
+  <div class="pagination-controls" v-if="propertiesData && propertiesData.length > 0">
+    <button @click.prevent="fetchProperties(prevPage)" :disabled="!prevPage">Previous</button>
+    <button
+      v-for="page in totalPages"
+      :key="page"
+      @click.prevent="fetchProperties(page)"
+      :disabled="currentPage === page"
+      class="page-button"
+    >
+      {{ page }}
+    </button>
+    <button @click.prevent="fetchProperties(nextPage)" :disabled="!nextPage">Next</button>
+  </div>
 </template>
 
 <style scoped>
@@ -74,6 +98,9 @@ const propertiesData = computed(() => property.searchPropertyData)
 .data-card:hover {
   transform: translateY(-1.2rem);
   box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+}
+.data-card .card-upper {
+  min-height: 260px;
 }
 .data-card .swiper-slide img {
   object-fit: cover;
@@ -122,5 +149,20 @@ const propertiesData = computed(() => property.searchPropertyData)
   line-height: normal;
   font-weight: 700;
   text-align: center;
+}
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.page-button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.page-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 </style>
