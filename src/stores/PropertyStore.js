@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-export const usePropertyStore = defineStore('regions', {
+export const usePropertyStore = defineStore('property', {
   state: () => ({
     isLoading: false,
-    propertyData: [],
+    singlePropertyData: [],
     searchPropertyData: [],
     totalPages: 0,
     currentPage: 1,
@@ -14,37 +14,6 @@ export const usePropertyStore = defineStore('regions', {
   }),
 
   actions: {
-    async fetchAllListing(pageNumber, dataLimit) {
-      this.isLoading = true
-      try {
-        const response = await axios.get('http://localhost:3000/properties', {
-          params: {
-            _start: pageNumber,
-            _limit: dataLimit
-          },
-          headers: {
-            'content-type': 'application/json'
-          }
-        })
-        const data = await response.data
-        if (data && data.length > 0) {
-          this.$patch({
-            propertyData: data
-          })
-        } else {
-          this.$patch({
-            propertyData: []
-          })
-        }
-      } catch (error) {
-        console.error('Error fetching listings:', error)
-        this.$patch({
-          propertyData: []
-        })
-      } finally {
-        this.isLoading = false
-      }
-    },
     async searchProperty(type, page = 1, perPage = 9) {
       this.isLoading = true
       try {
@@ -88,6 +57,33 @@ export const usePropertyStore = defineStore('regions', {
           lastPage: 1,
           prevPage: null,
           nextPage: null
+        })
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async fetchSingleListing(id) {
+      this.isLoading = true
+      try {
+        const response = await axios.get(`http://localhost:3000/properties/${id}`, {
+          headers: {
+            'content-type': 'application/json'
+          }
+        })
+        const data = await response.data
+        if (data) {
+          this.$patch({
+            singlePropertyData: data
+          })
+        } else {
+          this.$patch({
+            singlePropertyData: []
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching Single listings:', error)
+        this.$patch({
+          singlePropertyData: []
         })
       } finally {
         this.isLoading = false

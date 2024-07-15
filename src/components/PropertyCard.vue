@@ -1,9 +1,11 @@
 <script setup>
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
-
+import { useRouter } from 'vue-router'
 import { computed } from 'vue'
 import { usePropertyStore } from '@/stores/PropertyStore'
+
+const router = useRouter()
 const property = usePropertyStore()
 const isLoading = computed(() => property.isLoading)
 
@@ -19,6 +21,10 @@ const props = defineProps({
 const fetchProperties = async (page = 1) => {
   await property.searchProperty(props.dType, page)
 }
+function showDetail(id) {
+  property.fetchSingleListing(id)
+  router.push({ name: 'detail', params: { id: id } })
+}
 </script>
 <template>
   <div v-if="isLoading">Loading...</div>
@@ -32,7 +38,7 @@ const fetchProperties = async (page = 1) => {
           /></swiper-slide>
         </swiper>
       </div>
-      <div class="card-lower">
+      <div class="card-lower" @click="showDetail(property.id)">
         <p class="data-location">{{ property.address }}</p>
         <h4 class="data-title">{{ property.community + ', ' + property.area }}</h4>
         <div class="data-price">
@@ -114,6 +120,7 @@ const fetchProperties = async (page = 1) => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  cursor: pointer;
 }
 .data-location {
   font-size: 14px;
